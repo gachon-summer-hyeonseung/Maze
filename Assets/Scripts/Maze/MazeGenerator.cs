@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,17 +6,25 @@ using UnityEngine;
 
 public class MazeGenerator : MonoBehaviour
 {
+    class StackItem
+    {
+        public MazeCell cell;
+        public int x;
+        public int z;
+        public List<int[]> directions = new() { new int[] { 1, 0 }, new int[] { -1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
+    }
+
     [SerializeField] private GameObject mazeCellPrefab;
     [SerializeField] private Transform mazeContainer;
 
-    [SerializeField] private int mazeWidth;
-    [SerializeField] private int mazeHeight;
+    [SerializeField] private int mazeSize;
 
     private MazeCell[,] mazeGrid;
+    private List<StackItem>[] stacks;
 
     void Start()
     {
-        Create(mazeWidth, mazeHeight);
+        Create(mazeSize, mazeSize);
     }
 
     public void Create(int width, int height)
@@ -32,80 +41,72 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        GenerateMaze(null, mazeGrid[0, 0]);
+        int starts = (int)Math.Truncate((double)width / 6);
+        stacks = new List<StackItem>[starts];
+
+        for (int i = 0; i < starts; i++)
+        {
+            var stack = stacks[i] = new List<StackItem>();
+            int[] cellPos = new int[] { UnityEngine.Random.Range(0, width), UnityEngine.Random.Range(0, height) };
+            var startItem = new StackItem { cell = mazeGrid[cellPos[0], cellPos[1]], x = cellPos[0], z = cellPos[1] };
+            stack.Add(startItem);
+        }
+
+
+        while (true)
+        {
+            bool status = Step();
+            Debug.Log(status);
+            Debug.Log("Step");
+            if (!status) break;
+        }
+
+        // GenerateMaze(null, mazeGrid[0, 0]);
         // mazeGrid[0, 0].ClearBackWall();
         mazeGrid[width - 1, height - 1].ClearFrontWall();
     }
 
-    private void GenerateMaze(MazeCell previousCell, MazeCell currentCell)
+    private bool Step()
     {
-        currentCell.Visit();
-        ClearWalls(previousCell, currentCell);
+        bool activated = false;
 
-        MazeCell nextCell;
-
-        do
+        for (int i = 0; i < stacks.Length; i++)
         {
-            nextCell = GetNextUnvisitedCell(currentCell);
+            List<StackItem> stack = stacks[i];
+            if (stack.Count == 0) continue;
 
-            if (nextCell != null)
+            activated = true;
+
+            StackItem currentCell = stack[stack.Count - 1];
+            currentCell.cell.Visit();
+
+            MazeCell nextCell = default;
+
+            while (currentCell.directions.Count != 0)
             {
-                GenerateMaze(currentCell, nextCell);
+                int index = UnityEngine.Random.Range(0, currentCell.directions.Count);
+                int[] direction = currentCell.directions[index];
+                int x = currentCell.x + direction[0];
+                int z = currentCell.z + direction[1];
+
+                if (x >= 0 && x < mazeSize && z >= 0 && z < mazeSize)
+                {
+                    nextCell = mazeGrid[x, z];
+                    if (nextCell.IsVisited == false)
+                    {
+                        ClearWalls(currentCell.cell, nextCell);
+                        stack.Add(new StackItem { cell = nextCell, x = x, z = z });
+                        break;
+                    }
+                }
+
+                currentCell.directions.RemoveAt(index);
             }
-        } while (nextCell != null);
-    }
 
-    private MazeCell GetNextUnvisitedCell(MazeCell currentCell)
-    {
-        var unvisitedCells = GetUnvisitedCells(currentCell);
-
-        return unvisitedCells.OrderBy(_ => Random.Range(1, 10)).FirstOrDefault();
-    }
-
-    private IEnumerable<MazeCell> GetUnvisitedCells(MazeCell currentCell)
-    {
-        int x = (int)currentCell.transform.position.x;
-        int z = (int)currentCell.transform.position.z;
-
-        if (x + 1 < mazeWidth)
-        {
-            var cellToRight = mazeGrid[x + 1, z];
-
-            if (cellToRight.IsVisited == false)
-            {
-                yield return cellToRight;
-            }
+            if (nextCell == null) stacks[i].RemoveAt(stack.Count - 1);
         }
 
-        if (x - 1 >= 0)
-        {
-            var cellToLeft = mazeGrid[x - 1, z];
-
-            if (cellToLeft.IsVisited == false)
-            {
-                yield return cellToLeft;
-            }
-        }
-
-        if (z + 1 < mazeHeight)
-        {
-            var cellToFront = mazeGrid[x, z + 1];
-
-            if (cellToFront.IsVisited == false)
-            {
-                yield return cellToFront;
-            }
-        }
-
-        if (z - 1 >= 0)
-        {
-            var cellToBack = mazeGrid[x, z - 1];
-
-            if (cellToBack.IsVisited == false)
-            {
-                yield return cellToBack;
-            }
-        }
+        return activated;
     }
 
     private void ClearWalls(MazeCell previousCell, MazeCell currentCell)
