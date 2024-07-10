@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MazeCellType
+{
+    DEFAULT,
+    MOVING
+}
+
 public class MazeCell : MonoBehaviour
 {
     [SerializeField] private GameObject leftWall;
@@ -11,6 +17,17 @@ public class MazeCell : MonoBehaviour
     [SerializeField] private GameObject unusedCell;
 
     public bool IsVisited { get; private set; }
+    public MazeCellType CellType { get; private set; }
+
+    private void Awake()
+    {
+        CellType = MazeCellType.DEFAULT;
+    }
+
+    public void Moving()
+    {
+        CellType = MazeCellType.MOVING;
+    }
 
     #region Clear Walls
     public void Visit()

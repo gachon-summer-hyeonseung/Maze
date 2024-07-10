@@ -17,7 +17,12 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] private GameObject mazeCellPrefab;
     [SerializeField] private Transform mazeContainer;
 
-    [SerializeField] private int mazeSize;
+    [SerializeField]
+    private int mazeSize;
+
+    [Range(0, 1)]
+    [SerializeField]
+    private float movingCellPercentage;
 
     private MazeCell[,] mazeGrid;
     private List<StackItem>[] stacks;
@@ -37,11 +42,19 @@ public class MazeGenerator : MonoBehaviour
         {
             for (int z = 0; z < height; z++)
             {
-                mazeGrid[x, z] = Instantiate(mazeCellPrefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
+                MazeCell cell = Instantiate(mazeCellPrefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
+                mazeGrid[x, z] = cell;
+                float randValue = UnityEngine.Random.Range(0f, 1f);
+                if (randValue < movingCellPercentage)
+                {
+                    cell.Moving();
+                }
             }
         }
 
-        int starts = (int)Math.Truncate((double)width / 6);
+        // int starts = (int)Math.Truncate((double)width / 6);
+        // if (starts > 2) starts = 2;
+        int starts = 1;
         stacks = new List<StackItem>[starts];
 
         for (int i = 0; i < starts; i++)
