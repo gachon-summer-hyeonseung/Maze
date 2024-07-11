@@ -22,11 +22,6 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    void Start()
-    {
-        SetMazeSize(20);
-    }
-
     public void SetMazeSize(int size)
     {
         MazeSize = size > 100 ? 100 : size;

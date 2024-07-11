@@ -14,8 +14,8 @@ namespace Lobby
 
         [Header("Settings")]
         [SerializeField] private GameObject settingPanel;
-
         [SerializeField] private TMP_Dropdown difficultyOption;
+        [SerializeField] private TMP_Dropdown mazeSizeOption;
 
         [Header("Sounds")]
         [SerializeField] private AudioMixer audioMixer;
@@ -47,6 +47,7 @@ namespace Lobby
             audioMixer.SetFloat("SFXVolume", sfxVolume);
 
             difficultyOption.value = PlayerPrefs.GetInt("Difficulty", 0);
+            GameManager.Instance.SetMazeSize(20);
         }
 
 
@@ -93,6 +94,22 @@ namespace Lobby
                     break;
                 case 2:
                     PlayerPrefs.SetInt("Difficulty", 2);
+                    break;
+            }
+        }
+
+        public void MazeSizeChanged()
+        {
+            switch (mazeSizeOption.value)
+            {
+                case 0:
+                    GameManager.Instance.SetMazeSize(20);
+                    break;
+                case 1:
+                    GameManager.Instance.SetMazeSize(50);
+                    break;
+                case 2:
+                    GameManager.Instance.SetMazeSize(100);
                     break;
             }
         }
