@@ -10,6 +10,8 @@ namespace Lobby
 {
     public class UIManager : MonoBehaviour
     {
+        [SerializeField] private GameObject playModePanel;
+
         [Header("Settings")]
         [SerializeField] private GameObject settingPanel;
 
@@ -30,6 +32,7 @@ namespace Lobby
         void Start()
         {
             settingPanel.SetActive(false);
+            playModePanel.SetActive(false);
 
             masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0);
             bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 0);
@@ -47,9 +50,19 @@ namespace Lobby
         }
 
 
-        public void PlayStart()
+        public void ShowPlayMode()
         {
-            SceneManager.LoadScene("GameScene");
+            playModePanel.SetActive(true);
+        }
+
+        public void StartInfiniteMode()
+        {
+            GameManager.Instance.StartPlaying();
+        }
+
+        public void StartTimeAttackMode()
+        {
+            GameManager.Instance.StartPlaying();
         }
 
         public void ShowRank()

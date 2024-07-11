@@ -17,8 +17,8 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] private GameObject mazeCellPrefab;
     [SerializeField] private Transform mazeContainer;
 
-    [SerializeField]
-    private int mazeSize;
+    // [SerializeField]
+    // private int mazeSize;
 
     [Range(0, 1)]
     [SerializeField]
@@ -29,6 +29,7 @@ public class MazeGenerator : MonoBehaviour
 
     void Start()
     {
+        int mazeSize = GameManager.Instance.MazeSize;
         Create(mazeSize, mazeSize);
     }
 
@@ -68,9 +69,9 @@ public class MazeGenerator : MonoBehaviour
 
         while (true)
         {
-            bool status = Step();
-            Debug.Log(status);
-            Debug.Log("Step");
+            bool status = Step(width, height);
+            // Debug.Log(status);
+            // Debug.Log("Step");
             if (!status) break;
         }
 
@@ -79,7 +80,7 @@ public class MazeGenerator : MonoBehaviour
         mazeGrid[width - 1, height - 1].ClearFrontWall();
     }
 
-    private bool Step()
+    private bool Step(int width, int height)
     {
         bool activated = false;
 
@@ -102,7 +103,7 @@ public class MazeGenerator : MonoBehaviour
                 int x = currentCell.x + direction[0];
                 int z = currentCell.z + direction[1];
 
-                if (x >= 0 && x < mazeSize && z >= 0 && z < mazeSize)
+                if (x >= 0 && x < width && z >= 0 && z < height)
                 {
                     nextCell = mazeGrid[x, z];
                     if (nextCell.IsVisited == false)

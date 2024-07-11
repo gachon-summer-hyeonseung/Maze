@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum DifficultyType
 {
@@ -13,21 +14,26 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public int MazeSize { get; private set; }
+
     void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-
+        SetMazeSize(20);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetMazeSize(int size)
     {
+        MazeSize = size > 100 ? 100 : size;
+    }
 
+    public void StartPlaying()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 }
