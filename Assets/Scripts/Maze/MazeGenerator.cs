@@ -15,6 +15,7 @@ public class MazeGenerator : MonoBehaviour
     }
 
     [SerializeField] private GameObject mazeCellPrefab;
+    [SerializeField] private GameObject mazeExitCellPrefab;
     [SerializeField] private Transform mazeContainer;
 
     // [SerializeField]
@@ -31,6 +32,7 @@ public class MazeGenerator : MonoBehaviour
     {
         int mazeSize = GameManager.Instance.MazeSize;
         Create(mazeSize, mazeSize);
+        GameManager.Instance.OnMazeGenerated();
     }
 
     public void Create(int width, int height)
@@ -43,7 +45,8 @@ public class MazeGenerator : MonoBehaviour
         {
             for (int z = 0; z < height; z++)
             {
-                MazeCell cell = Instantiate(mazeCellPrefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
+                GameObject prefab = x == width - 1 && z == height - 1 ? mazeExitCellPrefab : mazeCellPrefab;
+                MazeCell cell = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
                 mazeGrid[x, z] = cell;
                 float randValue = UnityEngine.Random.Range(0f, 1f);
                 if (randValue < movingCellPercentage)
@@ -77,7 +80,7 @@ public class MazeGenerator : MonoBehaviour
 
         // GenerateMaze(null, mazeGrid[0, 0]);
         // mazeGrid[0, 0].ClearBackWall();
-        mazeGrid[width - 1, height - 1].ClearFrontWall();
+        // mazeGrid[width - 1, height - 1].ClearFrontWall();
     }
 
     private bool Step(int width, int height)

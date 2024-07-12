@@ -46,24 +46,24 @@ namespace Lobby
             audioMixer.SetFloat("BGMVolume", bgmVolume);
             audioMixer.SetFloat("SFXVolume", sfxVolume);
 
-            difficultyOption.value = PlayerPrefs.GetInt("Difficulty", 0);
             GameManager.Instance.SetMazeSize(20);
         }
 
 
         public void ShowPlayMode()
         {
-            playModePanel.SetActive(true);
+            // playModePanel.SetActive(true);
+            GameManager.Instance.LoadGame();
         }
 
         public void StartInfiniteMode()
         {
-            GameManager.Instance.StartPlaying();
+            GameManager.Instance.LoadGame();
         }
 
         public void StartTimeAttackMode()
         {
-            GameManager.Instance.StartPlaying();
+            GameManager.Instance.LoadGame();
         }
 
         public void ShowRank()
@@ -84,18 +84,7 @@ namespace Lobby
 
         public void DifficultyChanged()
         {
-            switch (difficultyOption.value)
-            {
-                case 0:
-                    PlayerPrefs.SetInt("Difficulty", 0);
-                    break;
-                case 1:
-                    PlayerPrefs.SetInt("Difficulty", 1);
-                    break;
-                case 2:
-                    PlayerPrefs.SetInt("Difficulty", 2);
-                    break;
-            }
+            GameManager.Instance.SetDifficulty(difficultyOption.value + 1);
         }
 
         public void MazeSizeChanged()
