@@ -386,6 +386,7 @@ MonoBehaviour:
   frontWall: {fileID: 2703518481584465776}
   backWall: {fileID: 4590992834106141710}
   unusedCell: {fileID: 1433116137001703735}
+  coolTime: 4
 --- !u!1 &4590992834106141710
 GameObject:
   m_ObjectHideFlags: 0

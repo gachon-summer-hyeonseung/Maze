@@ -14,9 +14,31 @@ public class MazeGenerator : MonoBehaviour
         public List<int[]> directions = new() { new int[] { 1, 0 }, new int[] { -1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
     }
 
+    [Serializable]
+    class ItemOptions
+    {
+        public GameObject itemPrefab;
+
+        [Range(0, 1)]
+        [SerializeField]
+        private float spawnRate;
+
+        public float RateByDifficulty(DifficultyType difficulty)
+        {
+            return difficulty switch
+            {
+                DifficultyType.Easy => spawnRate,
+                DifficultyType.Normal => spawnRate * 0.25f,
+                DifficultyType.Hard => spawnRate * 0.5f,
+                _ => spawnRate,
+            };
+        }
+    }
+
     [SerializeField] private GameObject mazeCellPrefab;
     [SerializeField] private GameObject mazeExitCellPrefab;
     [SerializeField] private Transform mazeContainer;
+    [SerializeField] private ItemOptions[] items;
 
     // [SerializeField]
     // private int mazeSize;
@@ -32,6 +54,7 @@ public class MazeGenerator : MonoBehaviour
     {
         int mazeSize = GameManager.Instance.MazeSize;
         Create(mazeSize, mazeSize);
+        CreateItem(mazeSize, mazeSize);
         GameManager.Instance.OnMazeGenerated();
     }
 
@@ -41,6 +64,8 @@ public class MazeGenerator : MonoBehaviour
         // mazeHeight = height;
         mazeGrid = new MazeCell[width, height];
 
+        float movingWallRate = RateByDifficulty((DifficultyType)GameManager.Instance.Difficulty);
+
         for (int x = 0; x < width; x++)
         {
             for (int z = 0; z < height; z++)
@@ -49,7 +74,7 @@ public class MazeGenerator : MonoBehaviour
                 MazeCell cell = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
                 mazeGrid[x, z] = cell;
                 float randValue = UnityEngine.Random.Range(0f, 1f);
-                if (randValue < movingCellPercentage)
+                if (randValue < movingWallRate)
                 {
                     cell.Moving();
                 }
@@ -160,5 +185,35 @@ public class MazeGenerator : MonoBehaviour
             currentCell.ClearFrontWall();
             return;
         }
+    }
+
+    private void CreateItem(int width, int height)
+    {
+        foreach (var item in items)
+        {
+            float spawnRate = item.RateByDifficulty((DifficultyType)GameManager.Instance.Difficulty);
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                    float randValue = UnityEngine.Random.Range(0f, 1f);
+                    if (randValue < spawnRate)
+                    {
+                        Instantiate(item.itemPrefab, new Vector3(x, 0f, z), Quaternion.identity, mazeContainer);
+                    }
+                }
+            }
+        }
+    }
+
+    public float RateByDifficulty(DifficultyType difficulty)
+    {
+        return difficulty switch
+        {
+            DifficultyType.Easy => movingCellPercentage,
+            DifficultyType.Normal => movingCellPercentage * 1.25f,
+            DifficultyType.Hard => movingCellPercentage * 1.5f,
+            _ => movingCellPercentage,
+        };
     }
 }

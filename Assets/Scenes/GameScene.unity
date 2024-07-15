@@ -418,7 +418,8 @@ MonoBehaviour:
   mazeCellPrefab: {fileID: 3817075466160234255, guid: 47384c6a653b44fe18423e64a49305a1, type: 3}
   mazeExitCellPrefab: {fileID: 2765988447556916139, guid: 16140be6693d44f22b39cec0905fb02f, type: 3}
   mazeContainer: {fileID: 1724184767}
-  movingCellPercentage: 0.534
+  items: []
+  movingCellPercentage: 0.1
 --- !u!4 &121680438
 Transform:
   m_ObjectHideFlags: 0
