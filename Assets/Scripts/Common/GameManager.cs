@@ -14,6 +14,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [SerializeField]
+    private float plusTime = 10.0f;
+    [SerializeField]
+    private int plusScoreAmount = 50;
+
     public int MazeSize { get; private set; }
     public bool Playing => playing;
     private bool playing = false;
@@ -58,6 +63,16 @@ public class GameManager : MonoBehaviour
     public void SetDifficulty(int difficulty)
     {
         this.difficulty = difficulty;
+    }
+
+    public void AddTime()
+    {
+        leftPlayTime += plusTime;
+    }
+
+    public void AddScore()
+    {
+        plusScore += plusScoreAmount;
     }
 
     public void LoadGame()

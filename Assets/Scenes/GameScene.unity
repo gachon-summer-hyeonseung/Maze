@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 25624975}
   - component: {fileID: 25624976}
   - component: {fileID: 25624977}
+  - component: {fileID: 25624978}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -250,6 +251,18 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &25624978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25624972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b686eb3f11dd164c94beed24e607169, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &49801173
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,7 +431,11 @@ MonoBehaviour:
   mazeCellPrefab: {fileID: 3817075466160234255, guid: 47384c6a653b44fe18423e64a49305a1, type: 3}
   mazeExitCellPrefab: {fileID: 2765988447556916139, guid: 16140be6693d44f22b39cec0905fb02f, type: 3}
   mazeContainer: {fileID: 1724184767}
-  items: []
+  items:
+  - itemPrefab: {fileID: 2149923777934790714, guid: d387dabce88e18445a4c2e2437540800, type: 3}
+    spawnRate: 0.1
+  - itemPrefab: {fileID: 7589107071883334649, guid: df1c00ef33aafc44fb603fb80f06bed7, type: 3}
+    spawnRate: 0.1
   movingCellPercentage: 0.1
 --- !u!4 &121680438
 Transform:
