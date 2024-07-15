@@ -81,6 +81,7 @@ public class MazeCell : MonoBehaviour
 
     GameObject GetMovingWall()
     {
+        Debug.Log(gameObject.transform.position.x);
         if (leftWall.activeSelf && gameObject.transform.position.x != 0) return leftWall;
         if (rightWall.activeSelf && gameObject.transform.position.x != mazeSize) return rightWall;
         if (frontWall.activeSelf && gameObject.transform.position.z != mazeSize) return frontWall;
