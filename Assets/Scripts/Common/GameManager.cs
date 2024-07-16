@@ -46,12 +46,13 @@ public class GameManager : MonoBehaviour
         if (playing)
         {
             leftPlayTime -= Time.deltaTime;
-            totalPlayTime += Time.deltaTime;
+            currPlayTime += Time.deltaTime;
             if (leftPlayTime <= 0)
             {
                 leftPlayTime = 0;
                 OnTimeEnded();
             }
+            UpdateScore();
         }
     }
 
@@ -108,6 +109,11 @@ public class GameManager : MonoBehaviour
         score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
         SaveScore();
         SceneManager.LoadScene("RankScene");
+    }
+
+    void UpdateScore()
+    {
+        score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
     }
 
     void SaveScore()
