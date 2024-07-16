@@ -4,8 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[Serializable]
+public abstract class BaseItemOption
+{
+    public GameObject itemPrefab;
+
+    [Range(0, 1)]
+    [SerializeField]
+    protected float spawnRate;
+
+    public abstract float RateByDifficulty(DifficultyType difficulty);
+}
+
 public class MazeGenerator : MonoBehaviour
 {
+    public static MazeGenerator Instance { get; private set; }
+
     class StackItem
     {
         public MazeCell cell;
@@ -15,21 +29,30 @@ public class MazeGenerator : MonoBehaviour
     }
 
     [Serializable]
-    class ItemOptions
+    class ItemOptions : BaseItemOption
     {
-        public GameObject itemPrefab;
-
-        [Range(0, 1)]
-        [SerializeField]
-        private float spawnRate;
-
-        public float RateByDifficulty(DifficultyType difficulty)
+        public override float RateByDifficulty(DifficultyType difficulty)
         {
             return difficulty switch
             {
                 DifficultyType.Easy => spawnRate,
-                DifficultyType.Normal => spawnRate * 0.25f,
+                DifficultyType.Normal => spawnRate * 0.75f,
                 DifficultyType.Hard => spawnRate * 0.5f,
+                _ => spawnRate,
+            };
+        }
+    }
+
+    [Serializable]
+    class ObstacleOptions : BaseItemOption
+    {
+        public override float RateByDifficulty(DifficultyType difficulty)
+        {
+            return difficulty switch
+            {
+                DifficultyType.Easy => spawnRate,
+                DifficultyType.Normal => spawnRate * 1.25f,
+                DifficultyType.Hard => spawnRate * 1.5f,
                 _ => spawnRate,
             };
         }
@@ -39,6 +62,7 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] private GameObject mazeExitCellPrefab;
     [SerializeField] private Transform mazeContainer;
     [SerializeField] private ItemOptions[] items;
+    [SerializeField] private ObstacleOptions[] obstacles;
 
     // [SerializeField]
     // private int mazeSize;
@@ -47,8 +71,15 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField]
     private float movingCellPercentage;
 
+    private BaseItemOption[,] itemGrid;
     private MazeCell[,] mazeGrid;
     private List<StackItem>[] stacks;
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     void Start()
     {
@@ -56,6 +87,12 @@ public class MazeGenerator : MonoBehaviour
         Create(mazeSize, mazeSize);
         CreateItem(mazeSize, mazeSize);
         GameManager.Instance.OnMazeGenerated();
+
+        // var path = GetShortestDistance(0, 0);
+        // foreach (var cell in path)
+        // {
+        //     cell.ShowFloor();
+        // }
     }
 
     public void Create(int width, int height)
@@ -191,21 +228,48 @@ public class MazeGenerator : MonoBehaviour
 
     private void CreateItem(int width, int height)
     {
+        itemGrid = new BaseItemOption[width, height];
+
         foreach (var item in items)
         {
-            float spawnRate = item.RateByDifficulty((DifficultyType)GameManager.Instance.Difficulty);
             for (int x = 0; x < width; x++)
             {
                 for (int z = 0; z < height; z++)
                 {
+                    BaseItemOption cellItem = itemGrid[x, z];
+                    if (cellItem != null) continue;
+
+                    float spawnRate = item.RateByDifficulty((DifficultyType)GameManager.Instance.Difficulty);
                     float randValue = UnityEngine.Random.Range(0f, 1f);
                     if (randValue < spawnRate)
                     {
                         Instantiate(item.itemPrefab, new Vector3(x, 0f, z), Quaternion.identity, mazeContainer);
+                        itemGrid[x, z] = item;
                     }
                 }
             }
         }
+
+        foreach (var obstacle in obstacles)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                    BaseItemOption cellItem = itemGrid[x, z];
+                    if (cellItem != null) continue;
+
+                    float spawnRate = obstacle.RateByDifficulty((DifficultyType)GameManager.Instance.Difficulty);
+                    float randValue = UnityEngine.Random.Range(0f, 1f);
+                    if (randValue < spawnRate)
+                    {
+                        Instantiate(obstacle.itemPrefab, new Vector3(x, 0f, z), Quaternion.identity, mazeContainer);
+                        itemGrid[x, z] = obstacle;
+                    }
+                }
+            }
+        }
+
     }
 
     public float RateByDifficulty(DifficultyType difficulty)
@@ -217,5 +281,102 @@ public class MazeGenerator : MonoBehaviour
             DifficultyType.Hard => movingCellPercentage * 1.5f,
             _ => movingCellPercentage,
         };
+    }
+
+    class BFSCell
+    {
+        public int x;
+        public int z;
+        public BFSCell prev;
+    }
+
+    public MazeCell[] GetShortestDistance(int x, int y)
+    {
+        int mazeSize = GameManager.Instance.MazeSize;
+        BFSCell[,] visited = new BFSCell[mazeSize, mazeSize];
+        Queue<BFSCell> cellList = new();
+
+        var hostCell = new BFSCell { x = x, z = y, prev = null };
+        visited[x, y] = hostCell;
+        cellList.Enqueue(hostCell);
+        // Debug.Log("Test : " + visited[11, 11].x);
+
+        int[] dirX = new int[] { 1, -1, 0, 0 };
+        int[] dirZ = new int[] { 0, 0, 1, -1 };
+
+        while (cellList.Count != 0)
+        {
+            var cell = cellList.Dequeue();
+            if (cell.x == mazeSize - 1 && cell.z == mazeSize - 1)
+            {
+                List<MazeCell> path = new();
+                while (cell != null)
+                {
+                    path.Add(mazeGrid[cell.x, cell.z]);
+                    cell = cell.prev;
+                }
+                return path.ToArray();
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = cell.x + dirX[i];
+                int nz = cell.z + dirZ[i];
+
+                if (nx < 0 || nx >= mazeSize || nz < 0 || nz >= mazeSize) continue;
+                if (visited[nx, nz] != default) continue;
+                if (CheckWall(mazeGrid[cell.x, cell.z], mazeGrid[nx, nz])) continue;
+
+                var newCell = new BFSCell { x = nx, z = nz, prev = cell };
+                visited[nx, nz] = newCell;
+                cellList.Enqueue(newCell);
+            }
+        }
+
+        return default;
+    }
+
+    bool CheckWall(MazeCell curr, MazeCell post)
+    {
+        if (curr.transform.position.x < post.transform.position.x)
+        {
+            return curr.rightWall.activeSelf;
+        }
+
+        if (curr.transform.position.x > post.transform.position.x)
+        {
+            return curr.leftWall.activeSelf;
+        }
+
+        if (curr.transform.position.z < post.transform.position.z)
+        {
+            return curr.frontWall.activeSelf;
+        }
+
+        if (curr.transform.position.z > post.transform.position.z)
+        {
+            return curr.backWall.activeSelf;
+        }
+
+        return false;
+    }
+
+    public void ShowHint(int x, int y)
+    {
+        StartCoroutine(IEShowHint(x, y));
+    }
+
+    IEnumerator IEShowHint(int x, int y)
+    {
+        var path = GetShortestDistance(x, y);
+        foreach (var cell in path)
+        {
+            cell.ShowFloor();
+        }
+        yield return new WaitForSeconds(3.0f);
+        foreach (var cell in path)
+        {
+            cell.HideFloor();
+        }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public enum DifficultyType
 {
-    Easy,
+    Easy = 1,
     Normal,
     Hard
 }

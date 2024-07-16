@@ -10,11 +10,12 @@ public enum MazeCellType
 
 public class MazeCell : MonoBehaviour
 {
-    [SerializeField] private GameObject leftWall;
-    [SerializeField] private GameObject rightWall;
-    [SerializeField] private GameObject frontWall;
-    [SerializeField] private GameObject backWall;
-    [SerializeField] private GameObject unusedCell;
+    [SerializeField] public GameObject leftWall;
+    [SerializeField] public GameObject rightWall;
+    [SerializeField] public GameObject frontWall;
+    [SerializeField] public GameObject backWall;
+    [SerializeField] public GameObject unusedCell;
+    public GameObject floor;
 
     public bool IsVisited { get; private set; }
     public MazeCellType CellType { get; private set; }
@@ -130,4 +131,14 @@ public class MazeCell : MonoBehaviour
         backWall.SetActive(false);
     }
     #endregion
+
+    public void ShowFloor()
+    {
+        floor.SetActive(true);
+    }
+
+    public void HideFloor()
+    {
+        floor.SetActive(false);
+    }
 }

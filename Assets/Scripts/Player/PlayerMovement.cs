@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody rb;
 
+    private float currMoveSpeed;
+
     private Vector2 direction;
 
     // Update is called once per frame
@@ -24,5 +26,16 @@ public class PlayerMovement : MonoBehaviour
         // Debug.Log(dir);
 
         direction = dir;
+    }
+
+    public void StopMovement()
+    {
+        currMoveSpeed = moveSpeed;
+        moveSpeed = 0;
+    }
+
+    public void StartMovement()
+    {
+        moveSpeed = currMoveSpeed;
     }
 }
