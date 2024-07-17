@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
 
     public void OnMazeGenerated()
     {
-        totalPlayTime = 60.0f * 10.0f / difficulty;
+        totalPlayTime = 60.0f * 3.0f / difficulty;
         leftPlayTime = totalPlayTime;
         currPlayTime = 0.0f;
 
@@ -106,14 +106,16 @@ public class GameManager : MonoBehaviour
     public void OnClear()
     {
         playing = false;
-        score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
+        // score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
+        score = plusScore;
         SaveScore();
         SceneManager.LoadScene("RankScene");
     }
 
     void UpdateScore()
     {
-        score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
+        // score = (int)(totalPlayTime - currPlayTime) * difficulty + plusScore;
+        score = plusScore;
     }
 
     void SaveScore()
