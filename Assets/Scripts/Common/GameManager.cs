@@ -91,6 +91,7 @@ public class GameManager : MonoBehaviour
         totalPlayTime = 60.0f * 3.0f / difficulty;
         leftPlayTime = totalPlayTime;
         currPlayTime = 0.0f;
+        plusScore = 0;
 
         playing = true;
     }
