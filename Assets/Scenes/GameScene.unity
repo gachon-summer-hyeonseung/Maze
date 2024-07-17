@@ -532,11 +532,11 @@ MonoBehaviour:
   mazeContainer: {fileID: 1724184767}
   items:
   - itemPrefab: {fileID: 7589107071883334649, guid: df1c00ef33aafc44fb603fb80f06bed7, type: 3}
-    spawnRate: 0.1
-  - itemPrefab: {fileID: 2149923777934790714, guid: d387dabce88e18445a4c2e2437540800, type: 3}
-    spawnRate: 0.1
-  - itemPrefab: {fileID: 7676117504231868983, guid: 8350a224932a24b39bb6641d5037d13d, type: 3}
     spawnRate: 0.05
+  - itemPrefab: {fileID: 2149923777934790714, guid: d387dabce88e18445a4c2e2437540800, type: 3}
+    spawnRate: 0.05
+  - itemPrefab: {fileID: 7676117504231868983, guid: 8350a224932a24b39bb6641d5037d13d, type: 3}
+    spawnRate: 0.01
   obstacles:
   - itemPrefab: {fileID: 4096172710498698992, guid: d6ef1b8fba4f0491cb168b6b1511603c, type: 3}
     spawnRate: 0.01
