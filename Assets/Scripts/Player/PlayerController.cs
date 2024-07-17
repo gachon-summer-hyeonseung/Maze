@@ -5,6 +5,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerMovement movement;
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -28,6 +34,9 @@ public class PlayerController : MonoBehaviour
             MazeGenerator.Instance.ShowHint(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
             Destroy(other.gameObject);
         }
+        else return;
+
+        audioSource.Play();
     }
 
     IEnumerator IEStopObsticle()
