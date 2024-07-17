@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int plusScoreAmount = 50;
 
+    public int MazeSizeOptionValue = 0;
     public int MazeSize { get; private set; }
     public bool Playing => playing;
     private bool playing = false;
@@ -39,6 +40,11 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    void Start()
+    {
+        MazeSize = 20;
     }
 
     void Update()

@@ -46,7 +46,8 @@ namespace Lobby
             audioMixer.SetFloat("BGMVolume", bgmVolume);
             audioMixer.SetFloat("SFXVolume", sfxVolume);
 
-            GameManager.Instance.SetMazeSize(20);
+            difficultyOption.value = GameManager.Instance.Difficulty - 1;
+            mazeSizeOption.value = GameManager.Instance.MazeSizeOptionValue;
         }
 
 
@@ -101,6 +102,7 @@ namespace Lobby
                     GameManager.Instance.SetMazeSize(100);
                     break;
             }
+            GameManager.Instance.MazeSizeOptionValue = mazeSizeOption.value;
         }
 
         #region Sound Volume Change
