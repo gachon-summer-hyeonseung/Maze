@@ -111,7 +111,7 @@ public class MazeGenerator : MonoBehaviour
                 MazeCell cell = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity, mazeContainer).GetComponent<MazeCell>();
                 mazeGrid[x, z] = cell;
 
-                if (x == 0 || x == width - 1 || z == 0 || z == height - 1) continue;
+                if (x <= 1 || x >= width - 2 || z <= 1 || z >= height - 2) continue;
                 float randValue = UnityEngine.Random.Range(0f, 1f);
                 if (randValue < movingWallRate)
                 {
